@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Đăng nhập / Đăng ký – Review Map 24H</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"San Francisco",Arial;}
+  body{
+    background:#fff;
+    height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    color:#111;
+  }
+  .auth-card{
+    width:360px;
+    background:white;
+    padding:26px 22px;
+    border-radius:20px;
+    box-shadow:0 12px 40px rgba(0,0,0,0.06);
+    border:1px solid #f1f1f1;
+    animation:fadeIn 0.35s ease;
+  }
+  @keyframes fadeIn {
+    from{opacity:0; transform:translateY(18px) scale(0.97)}
+    to{opacity:1; transform:translateY(0) scale(1)}
+  }
+  .tabs{
+    display:flex;
+    background:#fafafa;
+    padding:5px;
+    border-radius:14px;
+    margin-bottom:20px;
+    border:1px solid #f0f0f0;
+  }
+  .tab{
+    flex:1;
+    text-align:center;
+    padding:11px 0;
+    border-radius:11px;
+    font-size:14px;
+    font-weight:760;
+    cursor:pointer;
+    transition:0.25s;
+    color:#8e8e93;
+  }
+  .tab.active{
+    background:white;
+    color:#000;
+    box-shadow:0 4px 12px rgba(0,0,0,0.04);
+  }
+  label{
+    display:block;
+    font-size:13px;
+    font-weight:700;
+    margin-left:4px;
+    margin-bottom:5px;
+    color:#1f2937;
+  }
+  input{
+    width:100%;
+    padding:12px 17px;
+    border-radius:12px;
+    border:1.5px solid #e5e5ea;
+    background:#fdfdfd;
+    font-size:15px;
+    outline:none;
+    margin-bottom:14px;
+    transition:0.2s;
+  }
+  input:focus{
+    border-color:#c7c7cc;
+    box-shadow:0 0 0 3px rgba(0,0,0,0.02);
+    transform:scale(1.015);
+  }
+  .btn{
+    width:100%;
+    padding:13px;
+    border:none;
+    border-radius:12px;
+    background:#000;
+    color:white;
+    font-size:15px;
+    font-weight:800;
+    text-transform:uppercase;
+    cursor:pointer;
+    transition:0.28s;
+  }
+  .btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 8px 25px rgba(0,0,0,0.09);
+    background:#1c1c1e;
+  }
+  .view{display:none;}
+  .view.active{display:block;}
+
+  /* ===== iOS TOAST ===== */
+  .toast {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: rgba(255,255,255,0.72);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+    padding: 12px 20px;
+    border-radius: 14px;
+    min-width: 250px;
+    max-width: 330px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #000;
+    box-shadow: 0 10px 38px rgba(0,0,0,0.1);
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    border: 1px solid rgba(0,0,0,0.04);
+    z-index: 9999;
+  }
+
+  .toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .toast-icon {
+    font-size: 16px;
+  }
+
+  .toast.success .toast-icon { content:"✅"; }
+  .toast.error .toast-icon { content:"❌"; }
+  .toast.warning .toast-icon { content:"⚠️"; }
+</style>
+</head>
+<body>
+
+<div class="auth-card">
+  <div class="tabs">
+    <div class="tab active" id="tabLogin">Đăng nhập</div>
+    <div class="tab" id="tabRegister">Đăng ký</div>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="view active viewLogin">
+    <form id="loginForm">
+      <label>Tên đăng nhập</label>
+      <input type="text" id="loginUsername" placeholder="Nhập username">
+      <label>Mật khẩu</label>
+      <input type="password" id="loginPassword" placeholder="Nhập password">
+      <button class="btn" type="submit">Đăng nhập</button>
+    </form>
+  </div>
+
+  <!-- REGISTER -->
+  <div class="view viewRegister">
+    <form id="registerForm">
+      <label>Tên đăng nhập</label>
+      <input type="text" id="registerUsername" placeholder="Tối thiểu 3 ký tự">
+      <label>Mật khẩu</label>
+      <input type="password" id="registerPassword" placeholder="Tối thiểu 6 ký tự">
+      <button class="btn" type="submit">Đăng ký</button>
+    </form>
+  </div>
+</div>
+
+<!-- iOS Toast -->
+<div class="toast" id="toast">
+  <div class="toast-icon" id="toastIcon"></div>
+  <div class="toast-message" id="toastMessage">Thông báo</div>
+</div>
+
+<audio id="iosSound" preload="auto">
+  <source src="data:audio/mp3;base64,//uQZAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABcQ..." type="audio/mp3">
+</audio>
+
+<script>
+  // ===== CẤU HÌNH ADMIN =====
+  const ADMIN_USER = "youngboitobie";
+  const ADMIN_PASS = "skibiditoiletbanhmiramram123321@";
+
+  let users = JSON.parse(localStorage.getItem("users")||"[]");
+
+  // nếu chưa có admin thì tạo sẵn
+  function ensureAdmin(){
+    const adminName = ADMIN_USER.toLowerCase();
+    if(!users.find(u => u.username === adminName)){
+      users.push({
+        username: adminName,
+        password: ADMIN_PASS,
+        isAdmin: true,
+        createdAt: new Date().toISOString(),
+        lastLogin: null
+      });
+      localStorage.setItem("users", JSON.stringify(users));
+    }
+  }
+  ensureAdmin();
+
+  const loginView = document.querySelector(".viewLogin");
+  const registerView = document.querySelector(".viewRegister");
+  const tabLogin = document.getElementById("tabLogin");
+  const tabRegister = document.getElementById("tabRegister");
+  const toastBox = document.getElementById("toast");
+  const sound = document.getElementById("iosSound");
+  const toastIcon = document.getElementById("toastIcon");
+  const toastMessage = document.getElementById("toastMessage");
+
+  function showToast(message, type="success"){
+    toastBox.className = "toast " + type;
+    toastIcon.textContent = type==="success"?"✅":type==="error"?"❌":"⚠️";
+    toastMessage.textContent = message;
+    toastBox.classList.add("show");
+    try{ sound.play(); }catch(e){}
+    setTimeout(()=> toastBox.classList.remove("show"), 2500);
+  }
+
+  tabLogin.addEventListener("click",()=>{
+    tabLogin.classList.add("active");
+    tabRegister.classList.remove("active");
+    loginView.style.display="block";
+    registerView.style.display="none";
+  });
+
+  tabRegister.addEventListener("click",()=>{
+    tabRegister.classList.add("active");
+    tabLogin.classList.remove("active");
+    registerView.style.display="block";
+    loginView.style.display="none";
+  });
+
+  // ===== REGISTER =====
+  document.getElementById("registerForm").onsubmit = (e)=>{
+    e.preventDefault();
+    const u = registerUsername.value.trim().toLowerCase();
+    const p = registerPassword.value.trim();
+
+    if(!u || !p){ showToast("Điền đủ thông tin!", "warning"); return; }
+    if(u.length<3){ showToast("Username ≥ 3 ký tự!", "warning"); return; }
+    if(p.length<6){ showToast("Password ≥ 6 ký tự!", "warning"); return; }
+
+    // không cho đăng ký trùng username admin
+    if(u === ADMIN_USER.toLowerCase()){
+      showToast("Không thể đăng ký username admin này!", "error");
+      return;
+    }
+
+    if(users.find(x=>x.username===u)){
+      showToast("Tài khoản đã tồn tại!", "error");
+      return;
+    }
+
+    users.push({
+      username:u,
+      password:p,
+      isAdmin:false,
+      createdAt:new Date().toISOString(),
+      lastLogin:null
+    });
+    localStorage.setItem("users",JSON.stringify(users));
+    showToast("Đăng ký thành công!", "success");
+  };
+
+  // ===== LOGIN =====
+  document.getElementById("loginForm").onsubmit = (e)=>{
+    e.preventDefault();
+    const u = loginUsername.value.trim().toLowerCase();
+    const p = loginPassword.value.trim();
+
+    if(!u || !p){ showToast("Điền đủ username và password!", "warning"); return; }
+
+    users = JSON.parse(localStorage.getItem("users")||"[]"); // reload
+    let user = users.find(x=>x.username===u && x.password===p);
+
+    if(user){
+      // set role
+      const role = user.isAdmin ? "admin" : "user";
+      user.lastLogin = new Date().toISOString();
+      localStorage.setItem("users", JSON.stringify(users));
+
+      localStorage.setItem("currentUser",u);
+      localStorage.setItem("currentUserRole",role);
+
+      if (role === "admin") {
+        showToast("Đăng nhập admin thành công!", "success");
+        setTimeout(()=>{ window.location.href="admin.html" },1000);
+      } else {
+        showToast("Đăng nhập thành công!", "success");
+        setTimeout(()=>{ window.location.href="shop.html" },1000);
+      }
+    }else{
+      showToast("Sai tài khoản hoặc mật khẩu!", "error");
+    }
+  };
+</script>
+
+</body>
+</html>

@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lịch sử đơn – Review Map 247</title>
+
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial;}
+  body{
+    background:#eef3fb;
+    color:#111827;
+    min-height:100vh;
+  }
+
+  /* ===== Header / Toolbar (mới) ===== */
+  header{
+    background:linear-gradient(90deg,#ffffff,#f8fafc);
+    border-bottom:1px solid rgba(15,23,42,0.04);
+    position:relative;
+    z-index:60;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.6) inset;
+    min-height:64px;
+    padding:0; /* padding handled inside */
+  }
+
+  /* logo left */
+  .brand{
+    position:absolute;
+    left:16px;
+    top:12px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    text-decoration:none;
+    color:inherit;
+    z-index:70;
+  }
+  .brand .mark{
+    width:36px;height:36px;border-radius:8px;
+    background:linear-gradient(135deg,#2b6ef6,#7c3aed);
+    display:flex;align-items:center;justify-content:center;
+    color:white;font-weight:700;font-size:16px;
+    box-shadow:0 6px 18px rgba(20,20,50,0.06);
+  }
+  .brand .title{
+    font-weight:800;
+    color:#d30000;
+    font-size:16px;
+    white-space:nowrap;
+  }
+
+  /* centered menu */
+  nav.menu{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    display:flex;
+    align-items:center;
+    gap:12px;
+    z-index:60;
+  }
+  nav.menu a{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:8px 12px;
+    border-radius:10px;
+    text-decoration:none;
+    color:#4b5563;
+    background:transparent;
+    transition:background .12s ease, transform .12s ease;
+    border:1px solid transparent;
+    font-weight:600;
+  }
+  nav.menu a .ico{ width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;color:#6b7280; }
+  nav.menu a span{ color:#6b7280; font-weight:600; font-size:14px; white-space:nowrap; }
+  nav.menu a:hover{
+    background:rgba(43,110,246,0.06);
+    transform:translateY(-2px);
+    border-color:rgba(43,110,246,0.08);
+    color:#111827;
+  }
+  nav.menu a.active{
+    color:#e11d48;
+    font-weight:700;
+    background:rgba(225,29,72,0.06);
+  }
+  .divider{
+    height:28px;width:1px;background:rgba(15,23,42,0.04);
+    margin:0 6px;border-radius:1px;
+  }
+
+  /* balance pill (căn giữa chiều cao header ở phải) */
+  .balance-pill{
+    position:absolute;
+    top:50%;
+    right:18px;
+    transform:translateY(-50%);
+    background:#ffffff;
+    padding:6px 12px;
+    border-radius:999px;
+    font-size:13px;
+    font-weight:700;
+    box-shadow:0 6px 16px rgba(15,23,42,0.1);
+    border:1px solid #e5e7eb;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    z-index:65;
+  }
+  .btn-topup{
+    border:none;
+    padding:4px 8px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:700;
+    cursor:pointer;
+    background:#2563eb;
+    color:#ffffff;
+    transition:.2s;
+  }
+  .btn-topup:hover{ background:#1d4ed8; }
+
+  /* HEADER (cũ) style removed to avoid conflict; rest of CSS below is original */
+
+  /* MAIN CARD */
+  .page-wrap{
+    max-width:1150px;
+    margin:26px auto 40px;
+    padding:0 16px;
+  }
+  .card{
+    background:#ffffff;
+    border-radius:6px;
+    border:1px solid #e5e7eb;
+    box-shadow:0 10px 25px rgba(15,23,42,0.08);
+    padding:18px 20px 24px;
+  }
+
+  .guide{
+    font-size:13px;
+    line-height:1.6;
+    margin-bottom:16px;
+  }
+  .guide b{font-weight:700;}
+
+  .divider{
+    margin:10px 0 14px;
+    border-bottom:1px solid #e5e7eb;
+  }
+
+  /* SUMMARY STATS */
+  .stats-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:32px;
+    padding-bottom:12px;
+    border-bottom:1px solid #e5e7eb;
+    margin-bottom:16px;
+  }
+  .stat-item{text-align:center;min-width:80px;}
+  .stat-number{font-size:18px;font-weight:800;}
+  .stat-label{font-size:13px;margin-top:4px;}
+  .green{color:#16a34a;}
+  .blue{color:#2563eb;}
+  .yellow{color:#d97706;}
+  .red{color:#dc2626;}
+
+  /* TOP CONTROLS */
+  .top-controls{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:8px;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  .btn-group{display:flex;gap:4px;}
+  .btn-sm{
+    border:none;
+    padding:6px 10px;
+    border-radius:4px;
+    font-size:12px;
+    font-weight:600;
+    cursor:pointer;
+    background:#4b5563;
+    color:#f9fafb;
+  }
+  .btn-sm.light{
+    background:#e5e7eb;
+    color:#111827;
+  }
+  .btn-sm:hover{filter:brightness(.95);}
+
+  .search-box input{
+    padding:7px 10px;
+    border-radius:4px;
+    border:1px solid #d1d5db;
+    font-size:13px;
+    background:#f9fafb;
+    width:220px;
+  }
+
+  /* TABLE */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:13px;
+  }
+  th,td{
+    padding:8px 8px;
+    border-bottom:1px solid #e5e7eb;
+    text-align:left;
+  }
+  th{
+    background:#f9fafb;
+    font-weight:700;
+    color:#4b5563;
+    font-size:12px;
+  }
+
+  /* Trạng thái hiển thị dạng pill màu */
+  .status-pill{
+    display:inline-block;
+    padding:3px 8px;
+    border-radius:999px;
+    font-size:11px;
+    font-weight:700;
+    white-space:nowrap;
+  }
+  .status-running{
+    background:#fef3c7;   /* vàng nhạt */
+    color:#92400e;
+  }
+  .status-done{
+    background:#dcfce7;   /* xanh lá */
+    color:#166534;
+  }
+  .status-warranty-done{
+    background:#e0f2fe;
+    color:#0369a1;
+  }
+  .status-warranty{
+    background:#e0f2fe;
+    color:#1d4ed8;
+  }
+  .status-expired{
+    background:#e5e7eb;
+    color:#374151;
+  }
+  .status-reject{
+    background:#fee2e2;
+    color:#b91c1c;
+  }
+
+  .table-footer{
+    margin-top:8px;
+    font-size:12px;
+    color:#6b7280;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .pager{display:flex;gap:6px;}
+  .pager button{
+    padding:4px 10px;
+    border-radius:4px;
+    border:1px solid #d1d5db;
+    background:#fff;
+    font-size:12px;
+    cursor:pointer;
+  }
+  .pager button:disabled{
+    opacity:0.5;
+    cursor:not-allowed;
+  }
+
+  .rows-select{
+    padding:5px 8px;
+    border-radius:4px;
+    border:1px solid #d1d5db;
+    font-size:12px;
+    background:#f9fafb;
+  }
+
+  /* Toast */
+  .toast{
+    position:fixed;
+    right:18px;
+    bottom:18px;
+    background:rgba(255,255,255,0.95);
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+    border-radius:14px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.18);
+    border:1px solid rgba(0,0,0,0.05);
+    padding:10px 16px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:13px;
+    font-weight:600;
+    color:#111827;
+    opacity:0;
+    transform:translateY(20px);
+    pointer-events:none;
+    transition:.35s cubic-bezier(0.16,1,0.3,1);
+    z-index:999;
+  }
+  .toast.show{
+    opacity:1;
+    transform:translateY(0);
+    pointer-events:auto;
+  }
+  .toast-icon{font-size:16px;}
+
+  /* responsive */
+  @media (max-width:880px){
+    nav.menu a span{display:none}
+    .brand .title{font-size:15px}
+    .balance-pill{display:none}
+  }
+  @media (max-width:520px){
+    header{ padding:8px 10px; min-height:56px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NEW HEADER -->
+<header>
+  <a href="shop.html" class="brand" title="Về trang chính">
+    <div class="mark">RM</div>
+    <div class="title">Review Map 24H</div>
+  </a>
+
+  <nav class="menu" role="navigation" aria-label="Thanh điều hướng">
+    <a href="shop.html" class="nav-item" title="Tạo Đơn review map">
+      <i class="fa-solid fa-map-location-dot"></i>
+      <span>Tạo Đơn review map</span>
+    </a>
+    <a href="account.html" class="nav-item" title="Tài Khoản">
+      <i class="fa-solid fa-user"></i>
+      <span>Tài Khoản</span>
+    </a>
+    <a href="topup.html" class="nav-item" title="Nạp Tiền">
+      <i class="fa-solid fa-wallet"></i>
+      <span>Nạp Tiền</span>
+    </a>
+    <a href="history.html" class="nav-item active" title="Lịch Sử Đơn">
+      <i class="fa-solid fa-clock-rotate-left"></i>
+      <span>Lịch Sử Đơn</span>
+    </a>
+    <div class="divider" aria-hidden="true"></div>
+    <a href="contact.html" class="nav-item admin-link" title="Liên Hệ Admin">
+      <i class="fa-solid fa-circle-info"></i>
+      <span>Liên Hệ Admin</span>
+    </a>
+    <a href="login.html" class="nav-item logout" id="btnLogout" title="Đăng Xuất">
+      <i class="fa-solid fa-right-from-bracket"></i>
+      <span>Đăng Xuất</span>
+    </a>
+  </nav>
+
+  <div class="balance-pill" aria-hidden="true">
+    Số dư: <span id="balanceAmount">0 đ</span>
+    <button type="button" class="btn-topup" id="btnGoTopup">Nạp tiền</button>
+  </div>
+</header>
+
+<!-- ORIGINAL PAGE CONTENT (unchanged) -->
+<div class="page-wrap">
+  <div class="card">
+    <!-- HƯỚNG DẪN -->
+    <div class="guide">
+      <b>Hướng dẫn cách kiểm tra review: (trên desktop)</b><br><br>
+      <b>Bước 1:</b> Vào mục lịch sử đơn, copy ID maps hoặc Link maps và Search, lọc hiển thị toàn bộ đánh giá của maps cần kiểm tra.<br>
+      <b>Bước 2:</b> Mở maps, load xem toàn bộ những <b>đánh giá mới nhất</b> của maps trong <b>30 ngày</b> vừa qua.<br>
+      <b>Bước 3:</b> <b>Copy</b> nội dung review trên lịch sử và <b>Ctrl + F</b> tìm bên maps.<br><br>
+      <b>Lưu ý:</b> Khi bạn ấn bảo hành, web sẽ kiểm tra &amp; xử lý trong 24h. Nếu bạn cho rằng chúng tôi check sai, hãy liên hệ Zalo Admin khiếu nại trong vòng 24h.
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- THỐNG KÊ -->
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="stat-number green" id="statDone">0</div>
+        <div class="stat-label">Hoàn thành</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number yellow" id="statRunning">0</div>
+        <div class="stat-label">Đang chạy</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number green" id="statWarrantyDone">0</div>
+        <div class="stat-label">Đã bảo hành</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number blue" id="statWarranty">0</div>
+        <div class="stat-label">Còn bảo hành</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number yellow" id="statExpired">0</div>
+        <div class="stat-label">Hết bảo hành</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number red" id="statReject">0</div>
+        <div class="stat-label">Từ chối bảo hành</div>
+      </div>
+    </div>
+
+    <!-- CONTROL + TABLE -->
+    <div class="top-controls">
+      <div class="btn-group">
+        <button class="btn-sm light">Copy</button>
+        <button class="btn-sm light">CSV</button>
+        <button class="btn-sm light">Excel</button>
+        <select id="rowsPerPage" class="rows-select">
+          <option value="10">Show 10 rows</option>
+          <option value="20" selected>Show 20 rows</option>
+          <option value="50">Show 50 rows</option>
+        </select>
+      </div>
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Tìm kiếm...">
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Mã Đơn</th>
+          <th>Link Map</th>
+          <th>Place ID</th>
+          <th>Bảo Hành</th>
+          <th>Trạng Thái</th>
+          <th>Thông báo</th>
+          <th>Nội Dung</th>
+          <th>Ảnh Review</th>
+          <th>Số Lượng</th>
+          <th>Đơn Giá</th>
+          <th>Tổng</th>
+          <th>Ngày Order</th>
+          <th>Ngày Hoàn Thành</th>
+        </tr>
+      </thead>
+      <tbody id="orderBody">
+        <tr><td colspan="14" style="text-align:center;color:#6b7280;">No data available in table</td></tr>
+      </tbody>
+    </table>
+
+    <div class="table-footer">
+      <span id="tableInfo">Showing 0 to 0 of 0 entries</span>
+      <div class="pager">
+        <button id="btnPrev">Previous</button>
+        <button id="btnNext">Next</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toastIcon">✅</span>
+  <span id="toastMsg">Message</span>
+</div>
+
+<script>
+  // Render balance & setup topup + logout (keeps original behavior)
+  (function(){
+    const balanceSpan = document.getElementById('balanceAmount');
+    const btnTopup = document.getElementById('btnGoTopup');
+    const btnLogout = document.getElementById('btnLogout');
+
+    const currentUser = localStorage.getItem('currentUser');
+    let users = JSON.parse(localStorage.getItem('users') || '[]');
+    let currentUserObj = users.find(u => u.username === currentUser);
+
+    if(!currentUserObj){
+      currentUserObj = { username: currentUser || '', balance: 0 };
+    }
+    function formatVND(n){ return Number(n||0).toLocaleString('vi-VN') + ' đ'; }
+    if(balanceSpan) balanceSpan.textContent = formatVND(currentUserObj.balance || 0);
+
+    if(btnTopup){
+      btnTopup.addEventListener('click', ()=> window.location.href = 'topup.html');
+    }
+    // logout handled below as well in main script - keep consistent
+    if(btnLogout){
+      btnLogout.addEventListener('click', (e)=> {
+        e.preventDefault();
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('currentUserRole');
+        window.location.href = 'login.html';
+      });
+    }
+  })();
+</script>
+
+<script>
+  // ==== CHECK LOGIN ====
+  const currentUser = localStorage.getItem("currentUser");
+  if(!currentUser){
+    alert("Bạn cần đăng nhập!");
+    window.location.href = "login.html";
+  }
+
+  // ==== DATA ====
+  let allOrders = JSON.parse(localStorage.getItem("orders") || "[]")
+                   .filter(o => o.user === currentUser);
+  allOrders.sort((a,b)=> b.id - a.id);
+
+  let filteredOrders = [...allOrders];
+  let currentPage = 1;
+
+  const rowsSelect = document.getElementById("rowsPerPage");
+  const searchInput = document.getElementById("searchInput");
+  const bodyEl      = document.getElementById("orderBody");
+  const infoEl      = document.getElementById("tableInfo");
+  const btnPrev     = document.getElementById("btnPrev");
+  const btnNext     = document.getElementById("btnNext");
+
+  // Toast
+  const toast = document.getElementById('toast');
+  const toastIcon = document.getElementById('toastIcon');
+  const toastMsg = document.getElementById('toastMsg');
+  let toastTimer = null;
+
+  function showToast(message, type='success'){
+    toast.className = 'toast';
+    toast.classList.add('show');
+    if(type==='success') toastIcon.textContent = '✅';
+    else if(type==='error') toastIcon.textContent = '❌';
+    else toastIcon.textContent = '⚠️';
+    toastMsg.textContent = message;
+    if(toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=> toast.classList.remove('show'), 2500);
+  }
+
+  function formatVND(n){
+    return n.toLocaleString('vi-VN') + ' đ';
+  }
+
+  function statusClass(status){
+    status = (status || "").toLowerCase();
+    if(status.includes("hoàn thành")) return "status-done";          // xanh
+    if(status.includes("đang chạy") || status.includes("đang xử lý")) return "status-running"; // vàng
+    if(status.includes("đã bảo hành")) return "status-warranty-done";
+    if(status.includes("còn bảo hành")) return "status-warranty";
+    if(status.includes("hết bảo hành")) return "status-expired";
+    if(status.includes("từ chối")) return "status-reject";
+    return "status-running";
+  }
+
+  // FILTER + RENDER
+  function applyFilter(){
+    const text = searchInput.value.trim().toLowerCase();
+    filteredOrders = allOrders.filter(o=>{
+      if(!text) return true;
+      const fields = [
+        String(o.id),
+        o.mapsLink || "",
+        o.status || "",
+        o.keywords || "",
+        o.driveLink || ""
+      ].join(" ").toLowerCase();
+      return fields.includes(text);
+    });
+    currentPage = 1;
+    render();
+  }
+
+  function updateStats(){
+    let done=0,running=0,wDone=0,wRemain=0,expired=0,reject=0;
+    filteredOrders.forEach(o=>{
+      const s = (o.status || "Đang chạy").toLowerCase();
+      if(s.includes("hoàn thành")) done++;
+      else if(s.includes("đang chạy") || s.includes("đang xử lý")) running++;
+      else if(s.includes("đã bảo hành")) wDone++;
+      else if(s.includes("còn bảo hành")) wRemain++;
+      else if(s.includes("hết bảo hành")) expired++;
+      else if(s.includes("từ chối")) reject++;
+    });
+    document.getElementById("statDone").textContent         = done;
+    document.getElementById("statRunning").textContent      = running;
+    document.getElementById("statWarrantyDone").textContent = wDone;
+    document.getElementById("statWarranty").textContent     = wRemain;
+    document.getElementById("statExpired").textContent      = expired;
+    document.getElementById("statReject").textContent       = reject;
+  }
+
+  function render(){
+    updateStats();
+
+    const perPage = parseInt(rowsSelect.value,10);
+    const total   = filteredOrders.length;
+    const totalPages = Math.max(1, Math.ceil(total / perPage));
+    if(currentPage > totalPages) currentPage = totalPages;
+
+    const start = (currentPage-1)*perPage;
+    const end   = Math.min(start+perPage, total);
+    const pageItems = filteredOrders.slice(start,end);
+
+    bodyEl.innerHTML = "";
+
+    if(pageItems.length === 0){
+      bodyEl.innerHTML = `<tr><td colspan="14" style="text-align:center;color:#6b7280;">No data available in table</td></tr>`;
+    }else{
+      pageItems.forEach((o,idx)=>{
+        const index   = start + idx + 1;
+        const created = o.createdAt ? new Date(o.createdAt).toLocaleString('vi-VN') : "";
+        const done    = o.completedAt ? new Date(o.completedAt).toLocaleString('vi-VN') : "";
+        const status  = o.status || "Đang chạy";
+        const cls     = statusClass(status);
+
+        const quantity   = o.quantity || 0;
+        const unitPrice  = o.unitPrice || 0;
+        const totalPrice = quantity * unitPrice;
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${index}</td>
+          <td>${o.id}</td>
+          <td style="max-width:180px;word-break:break-all;">
+            <a href="${o.mapsLink || '#'}" target="_blank">${o.mapsLink || ""}</a>
+          </td>
+          <td>${o.placeId || ""}</td>
+          <td>${o.warranty || ""}</td>
+          <td><span class="status-pill ${cls}">${status}</span></td>
+          <td>${o.notice || ""}</td>
+          <td style="max-width:200px;word-break:break-word;">${o.keywords || ""}</td>
+          <td style="max-width:150px;word-break:break-all;">${o.driveLink || ""}</td>
+          <td>${quantity}</td>
+          <td>${unitPrice ? formatVND(unitPrice) : ""}</td>
+          <td>${unitPrice && quantity ? formatVND(totalPrice) : ""}</td>
+          <td>${created}</td>
+          <td>${done}</td>
+        `;
+        bodyEl.appendChild(tr);
+      });
+    }
+
+    if(total === 0){
+      infoEl.textContent = "Showing 0 to 0 of 0 entries";
+    }else{
+      infoEl.textContent = `Showing ${start+1} to ${end} of ${total} entries`;
+    }
+
+    btnPrev.disabled = currentPage <= 1;
+    btnNext.disabled = currentPage >= totalPages;
+  }
+
+  // EVENTS
+  rowsSelect.addEventListener("change", ()=>{currentPage=1;render();});
+  searchInput.addEventListener("input", applyFilter);
+
+  btnPrev.addEventListener("click", ()=>{ if(currentPage>1){currentPage--;render();}}); 
+  btnNext.addEventListener("click", ()=>{ currentPage++;render();});
+
+  document.getElementById("btnLogout").addEventListener("click",(e)=>{
+    e.preventDefault();
+    localStorage.removeItem("currentUser");
+    window.location.href="login.html";
+  });
+
+  // INIT
+  applyFilter();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin – Review Map 247</title>
+
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial;}
+  body{
+    background:#eef3fb;
+    color:#111827;
+    min-height:100vh;
+  }
+
+  header{
+    background:#eef3fb;
+    padding:16px 24px 12px;
+    text-align:center;
+    border-bottom:1px solid #dbe3f2;
+  }
+  .logo-heading{
+    font-size:22px;
+    font-weight:900;
+    color:#d30000;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+    margin-top:6px;
+  }
+  .nav{
+    display:flex;
+    justify-content:center;
+    gap:24px;
+    margin-top:14px;
+    flex-wrap:wrap;
+  }
+  .nav-item{
+    font-size:15px;
+    font-weight:600;
+    color:#4b5563;
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:4px 10px 6px;
+    border-radius:999px;
+    transition:.2s;
+  }
+  .nav-item i{font-size:15px;}
+  .nav-item:hover{
+    background:#e5edf9;
+    color:#111827;
+  }
+  .nav-item.active{
+    color:#e11d48;
+    font-weight:700;
+  }
+
+  .page-wrap{
+    max-width:1150px;
+    margin:26px auto 40px;
+    padding:0 16px;
+  }
+  .card{
+    background:#ffffff;
+    border-radius:6px;
+    border:1px solid #e5e7eb;
+    box-shadow:0 10px 25px rgba(15,23,42,0.08);
+    padding:18px 20px 20px;
+    margin-bottom:18px;
+  }
+  .card-title{
+    font-size:15px;
+    font-weight:700;
+    margin-bottom:10px;
+  }
+
+  .flex-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px;
+    align-items:flex-end;
+    margin-bottom:10px;
+  }
+  .field{
+    min-width:160px;
+  }
+  .field-label{
+    font-size:13px;
+    color:#4b5563;
+    margin-bottom:4px;
+  }
+  input[type="number"],
+  input[type="text"]{
+    width:100%;
+    padding:8px 10px;
+    border-radius:4px;
+    border:1px solid #d1d5db;
+    font-size:14px;
+    background:#f9fafb;
+    outline:none;
+  }
+  input:focus{
+    background:#ffffff;
+    border-color:#60a5fa;
+    box-shadow:0 0 0 1px rgba(59,130,246,.3);
+  }
+  .btn{
+    border:none;
+    padding:8px 14px;
+    border-radius:4px;
+    font-size:13px;
+    font-weight:700;
+    cursor:pointer;
+    transition:.2s;
+  }
+  .btn-primary{
+    background:#2563eb;
+    color:#ffffff;
+  }
+  .btn-primary:hover{background:#1d4ed8;}
+  .btn-save{
+    background:#16a34a;
+    color:#fff;
+  }
+  .btn-del{
+    background:#dc2626;
+    color:#fff;
+  }
+
+  .stats{
+    display:flex;
+    flex-wrap:wrap;
+    gap:16px;
+    margin-top:10px;
+    font-size:13px;
+  }
+  .stat-box{
+    padding:8px 10px;
+    border-radius:6px;
+    background:#f9fafb;
+    border:1px solid #e5e7eb;
+  }
+  .stat-box b{font-size:15px;}
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:13px;
+    margin-top:8px;
+  }
+  th,td{
+    padding:7px 8px;
+    border-bottom:1px solid #e5e7eb;
+    text-align:left;
+  }
+  th{
+    background:#f9fafb;
+    font-weight:700;
+    color:#4b5563;
+    font-size:12px;
+  }
+  select{
+    width:100%;
+    padding:6px 8px;
+    border-radius:4px;
+    border:1px solid #d1d5db;
+    background:#f9fafb;
+    font-size:12px;
+  }
+
+  .toast{
+    position:fixed;
+    right:18px;
+    bottom:18px;
+    background:rgba(255,255,255,0.95);
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+    border-radius:14px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.18);
+    border:1px solid rgba(0,0,0,0.05);
+    padding:10px 16px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:13px;
+    font-weight:600;
+    color:#111827;
+    opacity:0;
+    transform:translateY(20px);
+    pointer-events:none;
+    transition:.35s cubic-bezier(0.16,1,0.3,1);
+    z-index:999;
+  }
+  .toast.show{
+    opacity:1;
+    transform:translateY(0);
+    pointer-events:auto;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-heading">KHU VỰC ADMIN</div>
+  <nav class="nav">
+    <a href="shop.html" class="nav-item">
+      <i class="fa-solid fa-map-location-dot"></i> Tạo Đơn
+    </a>
+    <a href="account.html" class="nav-item">
+      <i class="fa-solid fa-user"></i> Tài Khoản
+    </a>
+    <a href="history.html" class="nav-item">
+      <i class="fa-solid fa-clock-rotate-left"></i> Lịch Sử
+    </a>
+    <a href="admin.html" class="nav-item active">
+      <i class="fa-solid fa-gear"></i> Admin
+    </a>
+    <a href="login.html" class="nav-item" id="btnLogout">
+      <i class="fa-solid fa-right-from-bracket"></i> Đăng Xuất
+    </a>
+  </nav>
+</header>
+
+<div class="page-wrap">
+
+  <!-- CẤU HÌNH GIÁ & TỔNG QUAN -->
+  <div class="card">
+    <div class="card-title">Cấu hình giá review & tổng quan</div>
+    <div class="flex-row">
+      <div class="field">
+        <div class="field-label">Đơn giá / 1 review (VND)</div>
+        <input type="number" id="priceInput" min="1000" step="500">
+      </div>
+      <button class="btn btn-primary" id="btnSavePrice">Lưu đơn giá</button>
+    </div>
+    <div class="stats">
+      <div class="stat-box">
+        Tổng tài khoản: <b id="statUsers">0</b>
+      </div>
+      <div class="stat-box">
+        Tổng đơn hàng: <b id="statOrders">0</b>
+      </div>
+      <div class="stat-box">
+        Tổng review đã đặt: <b id="statReviews">0</b>
+      </div>
+    </div>
+  </div>
+
+  <!-- DANH SÁCH TÀI KHOẢN -->
+  <div class="card">
+    <div class="card-title">Danh sách tài khoản</div>
+    <!-- 🔍 Thanh tìm kiếm danh sách tài khoản -->
+    <div class="flex-row" style="margin-bottom:8px;justify-content:flex-start;">
+      <input type="text" id="userSearch" placeholder="Tìm username..." style="max-width:280px;">
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Username</th>
+          <th>Admin?</th>
+          <th>Ngày tạo</th>
+          <th>Đăng nhập gần nhất</th>
+        </tr>
+      </thead>
+      <tbody id="userTable"></tbody>
+    </table>
+  </div>
+
+  <!-- 🎯 QUẢN LÝ SỐ DƯ TÀI KHOẢN -->
+  <div class="card">
+    <div class="card-title">Quản lý số dư tài khoản</div>
+    <!-- 🔍 Thanh tìm kiếm số dư -->
+    <div class="flex-row" style="margin-bottom:8px;justify-content:flex-start;">
+      <input type="text" id="balanceSearch" placeholder="Tìm username, số dư..." style="max-width:280px;">
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Username</th>
+          <th>Số dư hiện tại</th>
+          <th>Số dư mới</th>
+          <th>Lưu</th>
+        </tr>
+      </thead>
+      <tbody id="balanceTable"></tbody>
+    </table>
+  </div>
+
+  <!-- 🎯 DUYỆT LỆNH NẠP TIỀN -->
+  <div class="card">
+    <div class="card-title">Lệnh nạp tiền từ người dùng</div>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>User</th>
+          <th>Số tiền</th>
+          <th>Ghi chú user</th>
+          <th>Thời gian tạo</th>
+          <th>Trạng thái</th>
+          <th>Ghi chú admin</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody id="topupTable"></tbody>
+    </table>
+  </div>
+
+  <!-- QUẢN LÝ ĐƠN HÀNG -->
+  <div class="card">
+    <div class="card-title">Quản lý đơn hàng (sửa trạng thái & bảo hành)</div>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>ID</th>
+          <th>User</th>
+          <th>Link Map</th>
+          <th>SL</th>
+          <th>Giá</th>
+          <th>Trạng thái</th>
+          <th>Bảo hành</th>
+          <th>Ghi chú</th>
+          <th>Ngày tạo</th>
+          <th>Lưu</th>
+        </tr>
+      </thead>
+      <tbody id="orderTable"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<div class="toast" id="toast">Đã lưu</div>
+
+<script>
+  // ===== CHỈ ADMIN ĐƯỢC VÀO =====
+  const currentUser = localStorage.getItem("currentUser");
+  const currentRole = localStorage.getItem("currentUserRole");
+
+  if(!currentUser || currentRole !== "admin"){
+    alert("Chỉ admin mới được truy cập!");
+    window.location.href = "login.html";
+  }
+
+  document.getElementById("btnLogout").addEventListener("click", (e)=>{
+    e.preventDefault();
+    localStorage.removeItem("currentUser");
+    localStorage.removeItem("currentUserRole");
+    window.location.href="login.html";
+  });
+
+  // ===== TOAST =====
+  const toast = document.getElementById("toast");
+  let toastTimer = null;
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add("show");
+    if(toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=> toast.classList.remove("show"), 2200);
+  }
+
+  // ===== DATA =====
+  let users  = JSON.parse(localStorage.getItem("users")  || "[]");
+  let orders = JSON.parse(localStorage.getItem("orders") || "[]");
+  let adminConfig = JSON.parse(localStorage.getItem("adminConfig") || "{}");
+  let topupRequests = JSON.parse(localStorage.getItem("topupRequests") || "[]");
+
+  // đảm bảo user nào cũng có balance
+  users.forEach(u => {
+    if (typeof u.balance !== "number") u.balance = 0;
+  });
+  localStorage.setItem("users", JSON.stringify(users));
+
+  // ===== GIÁ REVIEW =====
+  const DEFAULT_PRICE = 14000;
+  const priceInput = document.getElementById("priceInput");
+  priceInput.value = adminConfig.reviewPrice || DEFAULT_PRICE;
+
+  document.getElementById("btnSavePrice").addEventListener("click", ()=>{
+    let v = parseInt(priceInput.value) || DEFAULT_PRICE;
+    if(v < 1000) v = 1000;
+    priceInput.value = v;
+    adminConfig.reviewPrice = v;
+    localStorage.setItem("adminConfig", JSON.stringify(adminConfig));
+    showToast("Đã lưu đơn giá: " + v.toLocaleString("vi-VN") + "đ");
+  });
+
+  // ===== TỔNG QUAN =====
+  const statUsers   = document.getElementById("statUsers");
+  const statOrders  = document.getElementById("statOrders");
+  const statReviews = document.getElementById("statReviews");
+
+  statUsers.textContent   = users.length;
+  statOrders.textContent  = orders.length;
+  statReviews.textContent = orders.reduce((sum,o)=>sum+(o.quantity||0),0);
+
+  // ===== BẢNG USER =====
+  const userTbody = document.getElementById("userTable");
+  if(users.length === 0){
+    userTbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#6b7280;">Không có tài khoản nào</td></tr>`;
+  }else{
+    users.forEach((u,idx)=>{
+      const tr = document.createElement("tr");
+      const created   = u.createdAt ? new Date(u.createdAt).toLocaleString("vi-VN") : "";
+      const lastLogin = u.lastLogin ? new Date(u.lastLogin).toLocaleString("vi-VN") : "Chưa từng";
+      tr.innerHTML = `
+        <td>${idx+1}</td>
+        <td>${u.username}</td>
+        <td>${u.isAdmin ? "✅" : ""}</td>
+        <td>${created}</td>
+        <td>${lastLogin}</td>
+      `;
+      userTbody.appendChild(tr);
+    });
+  }
+
+  // ===== BẢNG QUẢN LÝ SỐ DƯ =====
+  const balanceTbody = document.getElementById("balanceTable");
+  if(users.length === 0){
+    balanceTbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#6b7280;">Không có tài khoản nào</td></tr>`;
+  }else{
+    users.forEach((u,idx)=>{
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${idx+1}</td>
+        <td>${u.username}</td>
+        <td>${u.balance.toLocaleString("vi-VN")}đ</td>
+        <td><input type="number" class="balanceInput" value="${u.balance}" min="0" step="1000"></td>
+        <td><button class="btn btn-save btnBalanceSave">Lưu</button></td>
+      `;
+      balanceTbody.appendChild(tr);
+
+      const inp = tr.querySelector(".balanceInput");
+      const btn = tr.querySelector(".btnBalanceSave");
+
+      btn.addEventListener("click", ()=>{
+        let v = parseInt(inp.value);
+        if(isNaN(v) || v < 0) v = 0;
+        u.balance = v;
+        localStorage.setItem("users", JSON.stringify(users));
+        showToast("Đã cập nhật số dư cho " + u.username);
+        tr.children[2].textContent = u.balance.toLocaleString("vi-VN") + "đ";
+      });
+    });
+  }
+
+  // ===== BẢNG DUYỆT LỆNH NẠP TIỀN (THÊM TỪ CHỐI + GHI CHÚ ADMIN) =====
+  const topupTbody = document.getElementById("topupTable");
+  if (topupRequests.length === 0) {
+    topupTbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:#6b7280;">Chưa có lệnh nạp nào</td></tr>`;
+  } else {
+    topupRequests.forEach((r, idx) => {
+      const tr = document.createElement("tr");
+      const created = r.createdAt ? new Date(r.createdAt).toLocaleString("vi-VN") : "";
+
+      tr.innerHTML = `
+        <td>${idx + 1}</td>
+        <td>${r.user}</td>
+        <td>${(r.amount || 0).toLocaleString("vi-VN")}đ</td>
+        <td>${r.note || ""}</td>
+        <td>${created}</td>
+        <td class="topup-status-cell">${r.status || "Đang xử lý"}</td>
+        <td>
+          <input type="text" class="topupNoteAdmin" placeholder="Ghi chú admin..."
+                 value="${r.adminNote ? r.adminNote.replace(/"/g,'&quot;') : ""}">
+        </td>
+        <td class="topup-action-cell"></td>
+      `;
+      topupTbody.appendChild(tr);
+
+      const statusCell = tr.querySelector(".topup-status-cell");
+      const actionCell = tr.querySelector(".topup-action-cell");
+      const noteAdminInput = tr.querySelector(".topupNoteAdmin");
+
+      // Tạo 2 nút: Duyệt + Từ chối
+      const btnApprove = document.createElement("button");
+      btnApprove.className = "btn btn-save";
+      btnApprove.textContent = "Duyệt";
+
+      const btnReject = document.createElement("button");
+      btnReject.className = "btn btn-del";
+      btnReject.style.marginLeft = "6px";
+      btnReject.textContent = "Từ chối";
+
+      actionCell.appendChild(btnApprove);
+      actionCell.appendChild(btnReject);
+
+      // Trạng thái cuối: không cho thao tác nữa
+      function isFinalStatus(st) {
+        return st === "Hoàn thành" || st === "Từ chối" || st === "Hủy lệnh" || st === "Hết hạn";
+      }
+
+      function disableButtons() {
+        btnApprove.disabled = true;
+        btnReject.disabled = true;
+        btnApprove.style.opacity = "0.5";
+        btnReject.style.opacity = "0.5";
+        btnApprove.style.cursor = "default";
+        btnReject.style.cursor = "default";
+        noteAdminInput.readOnly = true;
+      }
+
+      if (isFinalStatus(r.status)) {
+        disableButtons();
+      }
+
+      // 👉 DUYỆT: cộng tiền + đổi trạng thái Hoàn thành, lưu ghi chú admin
+      btnApprove.addEventListener("click", () => {
+        if (isFinalStatus(r.status)) return;
+
+        const u = users.find(x => x.username === r.user);
+        if (!u) {
+          showToast("Không tìm thấy user " + r.user);
+          return;
+        }
+
+        const amount = parseInt(r.amount) || 0;
+        u.balance = (u.balance || 0) + amount;
+
+        r.status = "Hoàn thành";
+        r.adminNote = noteAdminInput.value.trim();
+        r.processedAt = new Date().toISOString();
+
+        localStorage.setItem("users", JSON.stringify(users));
+        localStorage.setItem("topupRequests", JSON.stringify(topupRequests));
+
+        statusCell.textContent = r.status;
+        disableButtons();
+        showToast("Đã duyệt lệnh nạp của " + r.user);
+      });
+
+      // 👉 TỪ CHỐI: đổi trạng thái Từ chối, lưu ghi chú admin
+      btnReject.addEventListener("click", () => {
+        if (isFinalStatus(r.status)) return;
+
+        r.status = "Từ chối";
+        r.adminNote = noteAdminInput.value.trim();
+        r.processedAt = new Date().toISOString();
+
+        localStorage.setItem("topupRequests", JSON.stringify(topupRequests));
+
+        statusCell.textContent = r.status;
+        disableButtons();
+        showToast("Đã từ chối lệnh nạp của " + r.user);
+      });
+    });
+  }
+
+  // ===== BẢNG ĐƠN HÀNG =====
+  const orderTbody = document.getElementById("orderTable");
+  if(orders.length === 0){
+    orderTbody.innerHTML = `<tr><td colspan="11" style="text-align:center;color:#6b7280;">Không có đơn nào</td></tr>`;
+  }else{
+    orders
+      .sort((a,b)=>b.id-a.id)
+      .forEach((o,idx)=>{
+        const tr = document.createElement("tr");
+        const created = o.createdAt ? new Date(o.createdAt).toLocaleString("vi-VN") : "";
+        tr.innerHTML = `
+          <td>${idx+1}</td>
+          <td>${o.id}</td>
+          <td>${o.user}</td>
+          <td style="max-width:180px;word-break:break-all;">
+            <a href="${o.mapsLink || "#"}" target="_blank">${o.mapsLink || ""}</a>
+          </td>
+          <td>${o.quantity || 0}</td>
+          <td>${o.unitPrice ? o.unitPrice.toLocaleString("vi-VN")+"đ" : ""}</td>
+          <td>
+            <select class="statusSel">
+              <option ${o.status==="Đang chạy"?"selected":""}>Đang chạy</option>
+              <option ${o.status==="Hoàn thành"?"selected":""}>Hoàn thành</option>
+              <option ${o.status==="Từ chối"?"selected":""}>Từ chối</option>
+              <option ${o.status==="Đã bảo hành"?"selected":""}>Đã bảo hành</option>
+              <option ${o.status==="Còn bảo hành"?"selected":""}>Còn bảo hành</option>
+              <option ${o.status==="Hết bảo hành"?"selected":""}>Hết bảo hành</option>
+              <option ${o.status==="Từ chối bảo hành"?"selected":""}>Từ chối bảo hành</option>
+            </select>
+          </td>
+          <td>
+            <select class="warrantySel">
+              <option value="" ${!o.warranty?"selected":""}>Không</option>
+              <option ${o.warranty==="Còn bảo hành"?"selected":""}>Còn bảo hành</option>
+              <option ${o.warranty==="Hết bảo hành"?"selected":""}>Hết bảo hành</option>
+              <option ${o.warranty==="Đã bảo hành"?"selected":""}>Đã bảo hành</option>
+              <option ${o.warranty==="Từ chối bảo hành"?"selected":""}>Từ chối bảo hành</option>
+            </select>
+          </td>
+          <td>
+            <input type="text" class="noteInput" value="${o.notice || ""}">
+          </td>
+          <td>${created}</td>
+          <td><button class="btn btn-save">Lưu</button></td>
+        `;
+        orderTbody.appendChild(tr);
+
+        const statusSel   = tr.querySelector(".statusSel");
+        const warrantySel = tr.querySelector(".warrantySel");
+        const noteInput   = tr.querySelector(".noteInput");
+        const btnSave     = tr.querySelector(".btn-save");
+
+        btnSave.addEventListener("click", ()=>{
+          const oldStatus = o.status || "Đang chạy";
+          const newStatus = statusSel.value;
+
+          // 👉 Nếu chuyển sang "Từ chối" lần đầu => hoàn tiền
+          if(oldStatus !== "Từ chối" && newStatus === "Từ chối"){
+            const u = users.find(x => x.username === o.user);
+            if(u){
+              const refundAmount = (o.unitPrice || 0) * (o.quantity || 0);
+              u.balance = (u.balance || 0) + refundAmount;
+              localStorage.setItem("users", JSON.stringify(users));
+              showToast("Đã hoàn " + (refundAmount||0).toLocaleString("vi-VN") + "đ cho " + o.user);
+            }else{
+              showToast("Không tìm thấy user " + o.user);
+            }
+          }
+
+          o.status   = newStatus;
+          o.warranty = warrantySel.value || "";
+          o.notice   = noteInput.value.trim();
+
+          if(o.status === "Hoàn thành"){
+            o.completedAt = new Date().toISOString();
+          }
+
+          localStorage.setItem("orders", JSON.stringify(orders));
+          showToast("Đã lưu đơn #" + o.id);
+        });
+      });
+  }
+
+  /* =========================
+     🎯 TÌM KIẾM + CHIA THEO NGÀY CHO ĐƠN HÀNG
+     ========================= */
+  (function(){
+    const orderTbodyEl = document.getElementById("orderTable");
+    if(!orderTbodyEl) return;
+
+    const table = orderTbodyEl.closest("table");
+    const card  = table.closest(".card");
+
+    // Tạo thanh filter (tìm kiếm + chọn ngày)
+    const filterRow = document.createElement("div");
+    filterRow.className = "flex-row";
+    filterRow.style.justifyContent = "space-between";
+    filterRow.style.marginBottom   = "8px";
+
+    const searchInput = document.createElement("input");
+    searchInput.type = "text";
+    searchInput.id = "orderSearch";
+    searchInput.placeholder = "Tìm theo user, ID, link map...";
+    searchInput.style.maxWidth = "280px";
+
+    const dateInput = document.createElement("input");
+    dateInput.type = "date";
+    dateInput.id = "orderDateFilter";
+    dateInput.style.maxWidth = "170px";
+    dateInput.style.fontSize = "13px";
+
+    filterRow.appendChild(searchInput);
+    filterRow.appendChild(dateInput);
+
+    card.insertBefore(filterRow, table);
+
+    // Gắn meta date cho từng dòng (dựa theo id -> orders)
+    const rows = Array.from(orderTbodyEl.querySelectorAll("tr"));
+    const orderMap = {};
+    orders.forEach(o => { orderMap[String(o.id)] = o; });
+
+    rows.forEach(row => {
+      const idCell = row.children[1];
+      const createdCell = row.children[9];
+      if(!idCell || !createdCell) return;
+      const idText = idCell.textContent.trim();
+      const o = orderMap[idText];
+      let iso = "";
+      let displayDate = "";
+      if(o && o.createdAt){
+        const d = new Date(o.createdAt);
+        iso = d.toISOString().slice(0,10); // yyyy-mm-dd
+        displayDate = d.toLocaleDateString("vi-VN");
+      }else{
+        const parts = (createdCell.textContent || "").split(",");
+        displayDate = parts[0] || "";
+      }
+      row.dataset.dateIso = iso;
+      row.dataset.dateDisplay = displayDate;
+    });
+
+    function applyFilter(){
+      // Xoá header ngày cũ
+      Array.from(orderTbodyEl.querySelectorAll("tr[data-date-header='1']")).forEach(r=>r.remove());
+
+      const kw = searchInput.value.trim().toLowerCase();
+      const dateVal = dateInput.value;
+
+      const dataRows = Array.from(orderTbodyEl.querySelectorAll("tr"))
+                            .filter(r => !r.dataset.dateHeader);
+
+      dataRows.forEach(row => {
+        const idText   = (row.children[1]?.textContent || "").toLowerCase();
+        const userText = (row.children[2]?.textContent || "").toLowerCase();
+        const linkText = (row.children[3]?.innerText   || "").toLowerCase();
+        const dateIso  = row.dataset.dateIso || "";
+
+        let show = true;
+        if(kw && !(idText.includes(kw) || userText.includes(kw) || linkText.includes(kw))){
+          show = false;
+        }
+        if(dateVal && dateIso && dateIso !== dateVal){
+          show = false;
+        }
+
+        row.style.display = show ? "" : "none";
+      });
+
+      // Thêm header cho từng ngày (chỉ các dòng đang hiển thị)
+      const visibleRows = Array.from(orderTbodyEl.querySelectorAll("tr"))
+                               .filter(r => !r.dataset.dateHeader && r.style.display !== "none");
+
+      let lastDate = "";
+      visibleRows.forEach(row => {
+        const dateDisp = row.dataset.dateDisplay;
+        if(!dateDisp) return;
+        if(dateDisp !== lastDate){
+          lastDate = dateDisp;
+          const headerRow = document.createElement("tr");
+          headerRow.dataset.dateHeader = "1";
+          headerRow.innerHTML = `
+            <td colspan="11"
+                style="background:#fef2f2;color:#b91c1c;font-weight:700;padding:6px 10px;border-bottom:1px solid #fecaca;">
+              📌 Ngày ${dateDisp}
+            </td>
+          `;
+          orderTbodyEl.insertBefore(headerRow, row);
+        }
+      });
+    }
+
+    searchInput.addEventListener("input", applyFilter);
+    dateInput.addEventListener("change", applyFilter);
+
+    // Chạy 1 lần để group theo ngày luôn
+    applyFilter();
+  })();
+
+  // =======================
+  // 🔍 Tìm kiếm bảng users
+  // =======================
+  (function(){
+    const userTbodyEl = document.getElementById("userTable");
+    const searchInput = document.getElementById("userSearch");
+    if(!userTbodyEl || !searchInput) return;
+
+    searchInput.addEventListener("input", ()=>{
+      const kw = searchInput.value.trim().toLowerCase();
+      Array.from(userTbodyEl.querySelectorAll("tr")).forEach(row=>{
+        const userText = (row.children[1]?.textContent || "").toLowerCase();
+        row.style.display = userText.includes(kw) ? "" : "none";
+      });
+    });
+  })();
+
+  // =======================
+  // 🔍 Tìm kiếm bảng số dư tài khoản
+  // =======================
+  (function(){
+    const balanceTbodyEl = document.getElementById("balanceTable");
+    const searchInput = document.getElementById("balanceSearch");
+    if(!balanceTbodyEl || !searchInput) return;
+
+    searchInput.addEventListener("input", ()=>{
+      const kw = searchInput.value.trim().toLowerCase();
+      Array.from(balanceTbodyEl.querySelectorAll("tr")).forEach(row=>{
+        const userText = (row.children[1]?.textContent || "").toLowerCase();
+        const balanceText = (row.children[2]?.textContent || "").toLowerCase();
+        row.style.display = (userText.includes(kw) || balanceText.includes(kw)) ? "" : "none";
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>

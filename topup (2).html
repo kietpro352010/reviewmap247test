@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nạp Tiền – Review Map 247</title>
+
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial;}
+  body{
+    background:#f3f4f6;
+    color:#111827;
+    min-height:100vh;
+  }
+
+  /* ===== Header / Toolbar (mới) ===== */
+  header{
+    background:linear-gradient(90deg,#ffffff,#f8fafc);
+    border-bottom:1px solid rgba(15,23,42,0.04);
+    position:relative;
+    z-index:60;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.6) inset;
+    min-height:64px;
+    padding:0;
+  }
+
+  /* logo left */
+  .brand{
+    position:absolute;
+    left:16px;
+    top:12px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    text-decoration:none;
+    color:inherit;
+    z-index:70;
+  }
+  .brand .mark{
+    width:36px;height:36px;border-radius:8px;
+    background:linear-gradient(135deg,#2b6ef6,#7c3aed);
+    display:flex;align-items:center;justify-content:center;
+    color:white;font-weight:700;font-size:16px;
+    box-shadow:0 6px 18px rgba(20,20,50,0.06);
+  }
+  .brand .title{
+    font-weight:800;
+    color:#d30000;
+    font-size:16px;
+    white-space:nowrap;
+  }
+
+  /* centered menu */
+  nav.menu{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    display:flex;
+    align-items:center;
+    gap:12px;
+    z-index:60;
+  }
+  nav.menu a{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:8px 12px;
+    border-radius:10px;
+    text-decoration:none;
+    color:#4b5563;
+    background:transparent;
+    transition:background .12s ease, transform .12s ease;
+    border:1px solid transparent;
+    font-weight:600;
+  }
+  nav.menu a .ico{ width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;color:#6b7280; }
+  nav.menu a span{ color:#6b7280; font-weight:600; font-size:14px; white-space:nowrap; }
+  nav.menu a:hover{
+    background:rgba(43,110,246,0.06);
+    transform:translateY(-2px);
+    border-color:rgba(43,110,246,0.08);
+    color:#111827;
+  }
+  nav.menu a.active{
+    color:#e11d48;
+    font-weight:700;
+    background:rgba(225,29,72,0.04);
+  }
+  .divider{
+    height:28px;width:1px;background:rgba(15,23,42,0.04);
+    margin:0 6px;border-radius:1px;
+  }
+
+  /* balance pill (right, vertically centered) */
+  .balance-pill{
+    position:absolute;
+    top:50%;
+    right:18px;
+    transform:translateY(-50%);
+    background:#ffffff;
+    padding:6px 12px;
+    border-radius:999px;
+    font-size:13px;
+    font-weight:700;
+    box-shadow:0 6px 16px rgba(15,23,42,0.1);
+    border:1px solid #e5e7eb;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    z-index:65;
+  }
+  .btn-topup{
+    border:none;
+    padding:4px 8px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:700;
+    cursor:pointer;
+    background:#2563eb;
+    color:#ffffff;
+    transition:.2s;
+  }
+  .btn-topup:hover{ background:#1d4ed8; }
+
+  /* ===========================================================
+     Rest of your original styles (unchanged) kept below
+     =========================================================== */
+
+  .page-wrap{
+    max-width:900px;
+    margin:30px auto 40px;
+    padding:0 16px;
+  }
+  .card{
+    background:#ffffff;
+    border-radius:12px;
+    border:1px solid #e5e7eb;
+    box-shadow:0 10px 30px rgba(0,0,0,0.06);
+    padding:20px;
+    margin-bottom:18px;
+  }
+  .card-title{
+    font-size:18px;
+    font-weight:800;
+    margin-bottom:14px;
+    text-align:center;
+  }
+  .field-label{
+    font-size:14px;
+    color:#4b5563;
+    font-weight:600;
+    margin-bottom:4px;
+  }
+  input, textarea{
+    width:100%;
+    padding:10px 12px;
+    border-radius:8px;
+    border:1px solid #d1d5db;
+    font-size:14px;
+    background:#f9fafb;
+    outline:none;
+    margin-bottom:12px;
+  }
+  input:focus, textarea:focus{
+    background:#ffffff;
+    border-color:#3b82f6;
+    box-shadow:0 0 0 2px rgba(59,130,246,.2);
+  }
+  textarea{min-height:70px;resize:none;}
+
+  .row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:16px;
+  }
+  .col{
+    flex:1 1 0;
+    min-width:0;
+  }
+
+  .qr-box{
+    display:flex;
+    justify-content:center;
+    margin:12px 0 18px;
+  }
+  .qr-box img{
+    width:220px;
+    border-radius:12px;
+    border:1px solid #e5e7eb;
+    box-shadow:0 8px 26px rgba(37,99,235,0.15);
+  }
+
+  .bank-line{
+    font-size:14px;
+    margin-bottom:6px;
+  }
+  .pill{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:#f3f4ff;
+    border-radius:999px;
+    padding:4px 10px;
+    font-size:13px;
+    border:1px solid #e5e7eb;
+  }
+
+  .btn-copy{
+    border:none;
+    padding:4px 8px;
+    border-radius:999px;
+    font-size:11px;
+    font-weight:700;
+    cursor:pointer;
+    background:#2563eb;
+    color:#ffffff;
+  }
+  .btn-copy:hover{
+    background:#1d4ed8;
+  }
+
+  .info{
+    font-size:13px;
+    background:#fefce8;
+    padding:10px 12px;
+    border-radius:8px;
+    border:1px solid #facc15;
+    margin-bottom:14px;
+    line-height:1.45;
+  }
+  .info b{color:#b91c1c;}
+
+  .btn{
+    width:100%;
+    background:#2563eb;
+    border:none;
+    padding:12px;
+    border-radius:8px;
+    font-size:15px;
+    font-weight:800;
+    color:#fff;
+    cursor:pointer;
+    transition:.2s;
+  }
+  .btn[disabled]{
+    opacity:0.6;
+    cursor:not-allowed;
+  }
+  .btn:hover:not([disabled]){background:#1d4ed8; }
+
+  .sub-note{
+    font-size:12px;
+    color:#6b7280;
+    margin-top:6px;
+    text-align:center;
+  }
+
+  .id-box{
+    margin-top:10px;
+    font-size:13px;
+    background:#eff6ff;
+    border-radius:8px;
+    padding:8px 10px;
+    border:1px solid #bfdbfe;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:8px;
+  }
+
+  .countdown{
+    font-size:13px;
+    color:#b91c1c;
+    margin-top:6px;
+    text-align:center;
+  }
+
+  /* Lịch sử */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:13px;
+    margin-top:6px;
+  }
+  th,td{
+    padding:7px 8px;
+    border-bottom:1px solid #e5e7eb;
+    text-align:left;
+  }
+  th{
+    background:#f9fafb;
+    font-weight:700;
+    color:#4b5563;
+    font-size:12px;
+  }
+  .badge{
+    display:inline-block;
+    padding:3px 8px;
+    border-radius:999px;
+    font-size:11px;
+    font-weight:700;
+  }
+  .badge-pending{
+    background:#fef9c3;
+    color:#92400e;
+  }
+  .badge-success{
+    background:#dcfce7;
+    color:#166534;
+  }
+  .badge-fail{
+    background:#fee2e2;
+    color:#b91c1c;
+  }
+
+  .toast{
+    position:fixed;
+    right:20px;
+    bottom:20px;
+    background:rgba(255,255,255,0.9);
+    backdrop-filter:blur(18px);
+    border-radius:12px;
+    border:1px solid rgba(0,0,0,0.05);
+    box-shadow:0 10px 30px rgba(0,0,0,0.18);
+    padding:10px 16px;
+    font-size:13px;
+    font-weight:700;
+    opacity:0;
+    transform:translateY(16px);
+    pointer-events:none;
+    transition:.3s;
+    z-index:999;
+  }
+  .toast.show{
+    opacity:1;
+    transform:translateY(0);
+  }
+  .toast.error{
+    background:rgba(255,240,240,0.95);
+    color:#b91c1c;
+    border-color:#fecaca;
+  }
+
+  @media (max-width:880px){
+    nav.menu a span{display:none}
+    .brand .title{font-size:15px}
+    .balance-pill{display:none}
+  }
+  @media (max-width:520px){
+    header{ padding:8px 10px; min-height:56px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="shop.html" class="brand" title="Về trang chính">
+    <div class="mark">RM</div>
+    <div class="title">Review Map 24H</div>
+  </a>
+
+  <nav class="menu" role="navigation" aria-label="Thanh điều hướng">
+    <a href="shop.html" class="nav-item" title="Tạo Đơn review map">
+      <i class="fa-solid fa-map-location-dot"></i>
+      <span>Tạo Đơn review map</span>
+    </a>
+
+    <a href="account.html" class="nav-item" title="Tài Khoản">
+      <i class="fa-solid fa-user"></i>
+      <span>Tài Khoản</span>
+    </a>
+
+    <a href="topup.html" class="nav-item active" title="Nạp Tiền">
+      <i class="fa-solid fa-wallet"></i>
+      <span>Nạp Tiền</span>
+    </a>
+
+    <a href="history.html" class="nav-item" title="Lịch Sử Đơn">
+      <i class="fa-solid fa-clock-rotate-left"></i>
+      <span>Lịch Sử Đơn</span>
+    </a>
+
+    <div class="divider" aria-hidden="true"></div>
+
+    <a href="contact.html" class="nav-item admin-link" title="Liên Hệ Admin">
+      <i class="fa-solid fa-circle-info"></i>
+      <span>Liên Hệ Admin</span>
+    </a>
+
+    <a href="login.html" class="nav-item logout" id="btnLogout" title="Đăng Xuất">
+      <i class="fa-solid fa-right-from-bracket"></i>
+      <span>Đăng Xuất</span>
+    </a>
+  </nav>
+
+  <div class="balance-pill" aria-hidden="true">
+    Số dư: <span id="balanceAmount">0 đ</span>
+    <button type="button" class="btn-topup" id="btnGoTopup">Nạp tiền</button>
+  </div>
+</header>
+
+<div class="page-wrap">
+  <!-- TẠO LỆNH NẠP -->
+  <div class="card">
+    <div class="card-title">Nạp tiền vào tài khoản</div>
+
+    <div class="row">
+      <!-- Cột trái: QR + thông tin ngân hàng -->
+      <div class="col">
+        <div class="qr-box">
+          <img src="2e447c721a32956ccc23.jpg" alt="QR Nạp tiền MB Bank">
+        </div>
+        <div class="bank-line">
+          <b>Ngân hàng:</b> MB Bank
+        </div>
+        <div class="bank-line">
+          <span class="pill">
+            STK: <span id="bankAccountNumber">40181866778899</span>
+            <button class="btn-copy" id="btnCopyAcc">Copy</button>
+          </span>
+        </div>
+        <div class="bank-line">
+          <b>Chủ tài khoản:</b> Dang Trung Thanh
+        </div>
+        <div class="info">
+          📌 <b>Lưu ý quan trọng</b><br>
+          – <b>Nội dung chuyển khoản là: ID Nạp</b><br>
+          – Mỗi lần tạo lệnh sẽ có <b>một ID nạp riêng</b>. Vui lòng ghi đúng nội dung này khi chuyển khoản để admin xử lý nhanh.
+        </div>
+      </div>
+
+      <!-- Cột phải: form tạo lệnh -->
+      <div class="col">
+        <div class="field-label">Số tiền muốn nạp (VND)</div>
+        <input type="number" id="topupAmount" min="10000" step="1000" placeholder="Ví dụ: 100000">
+
+        <div class="field-label">Lời nhắn kèm theo (nếu cần)</div>
+        <textarea id="topupNote" placeholder="Ghi chú thêm cho admin…"></textarea>
+
+        <button class="btn" id="btnCreateTopup">Tạo lệnh nạp</button>
+
+        <!-- Hiển thị ID nạp gần nhất + copy -->
+        <div id="currentTopupBox" style="display:none;">
+          <div class="id-box">
+            <span>ID Nạp của bạn: <b id="topupIdText"></b></span>
+            <button class="btn-copy" id="btnCopyId">Copy ID</button>
+          </div>
+          <div class="countdown">
+            Thời gian còn lại để chuyển khoản: <span id="countdownText">06:00:00</span>
+          </div>
+        </div>
+
+        <div class="sub-note">
+          Sau khi admin duyệt, số dư sẽ tự động cộng vào tài khoản của bạn.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LỊCH SỬ NẠP TIỀN -->
+  <div class="card">
+    <div class="card-title">Lịch sử nạp tiền của bạn</div>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>ID Nạp</th>
+          <th>Số tiền</th>
+          <th>Thời gian tạo</th>
+          <th>Trạng thái</th>
+        </tr>
+      </thead>
+      <tbody id="topupHistoryBody">
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ===== CHECK LOGIN =====
+  const currentUser = localStorage.getItem("currentUser");
+  if(!currentUser){
+    alert("Cần đăng nhập trước!");
+    window.location.href="login.html";
+  }
+
+  // ===== USERS & SỐ DƯ =====
+  let users = JSON.parse(localStorage.getItem("users") || "[]");
+  let userObj = users.find(u => u.username === currentUser);
+  if(!userObj){
+    userObj = {username:currentUser,password:"",balance:0,createdAt:Date.now(),lastLogin:null};
+    users.push(userObj);
+    localStorage.setItem("users",JSON.stringify(users));
+  }
+  if(typeof userObj.balance!=="number") userObj.balance=0;
+  localStorage.setItem("users",JSON.stringify(users));
+
+  const balanceSpan = document.getElementById("balanceAmount");
+  function renderBalance(){
+    balanceSpan.textContent = (userObj.balance || 0).toLocaleString("vi-VN") + " đ";
+  }
+  renderBalance();
+
+  // ===== TOAST =====
+  const toast = document.getElementById("toast");
+  let toastTimer=null;
+  function showToast(msg, isErr=false){
+    toast.textContent = msg;
+    toast.classList.toggle("error", isErr);
+    toast.classList.add("show");
+    if(toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=>toast.classList.remove("show"),2300);
+  }
+
+  // ===== COPY CLIPBOARD =====
+  function copyText(text){
+    if(!navigator.clipboard){
+      showToast("Trình duyệt không hỗ trợ copy", true);
+      return;
+    }
+    navigator.clipboard.writeText(text)
+      .then(()=>showToast("Đã copy: " + text))
+      .catch(()=>showToast("Copy không thành công", true));
+  }
+
+  document.getElementById("btnCopyAcc").addEventListener("click", ()=>{
+    const acc = document.getElementById("bankAccountNumber").textContent.trim();
+    copyText(acc);
+  });
+
+  const currentTopupBox = document.getElementById("currentTopupBox");
+  const topupIdText = document.getElementById("topupIdText");
+  const countdownText = document.getElementById("countdownText");
+  const btnCreateTopup = document.getElementById("btnCreateTopup");
+
+  document.getElementById("btnCopyId").addEventListener("click", ()=>{
+    const idVal = topupIdText.textContent.trim();
+    if(idVal) copyText(idVal);
+  });
+
+  // ===== TOPUP DATA =====
+  let topups = JSON.parse(localStorage.getItem("topupRequests") || "[]");
+
+  // Auto update các lệnh đã hết hạn (6 tiếng)
+  const now = Date.now();
+  topups.forEach(t => {
+    if(t.status === "Đang xử lý"){
+      const created = t.createdAt ? new Date(t.createdAt).getTime() : now;
+      const expireAt = t.expireAt ? new Date(t.expireAt).getTime() : created + 6*60*60*1000;
+      if(now >= expireAt){
+        t.status = "Hết hạn";
+      }
+      t.expireAt = new Date(expireAt).toISOString();
+    }
+  });
+  localStorage.setItem("topupRequests", JSON.stringify(topups));
+
+  // ===== RENDER LỊCH SỬ NẠP =====
+  const topupHistoryBody = document.getElementById("topupHistoryBody");
+
+  function renderHistory(){
+    const list = JSON.parse(localStorage.getItem("topupRequests") || "[]")
+                  .filter(t => t.user === currentUser)
+                  .sort((a,b)=> new Date(b.createdAt||0) - new Date(a.createdAt||0));
+
+    topupHistoryBody.innerHTML = "";
+    if(list.length === 0){
+      topupHistoryBody.innerHTML = `
+        <tr><td colspan="5" style="text-align:center;color:#6b7280;">Chưa có giao dịch nào</td></tr>
+      `;
+      return;
+    }
+
+    list.forEach((t,idx)=>{
+      const tr = document.createElement("tr");
+      const created = t.createdAt ? new Date(t.createdAt).toLocaleString("vi-VN") : "";
+
+      let badgeClass = "badge-pending";
+      if(t.status === "Hoàn thành") badgeClass = "badge-success";
+      else if(t.status === "Hủy lệnh" || t.status === "Hết hạn") badgeClass = "badge-fail";
+
+      tr.innerHTML = `
+        <td>${idx+1}</td>
+        <td>${t.id}</td>
+        <td>${(t.amount||0).toLocaleString("vi-VN")}đ</td>
+        <td>${created}</td>
+        <td><span class="badge ${badgeClass}">${t.status || "Đang xử lý"}</span></td>
+      `;
+      topupHistoryBody.appendChild(tr);
+    });
+  }
+
+  renderHistory();
+
+  // ===== ĐẾM NGƯỢC CHO LỆNH ĐANG XỬ LÝ MỚI NHẤT CỦA USER (6 TIẾNG) + KHÓA NÚT =====
+  let countdownTimer = null;
+  function startCountdownForPending(){
+    if(countdownTimer){
+      clearInterval(countdownTimer);
+      countdownTimer = null;
+    }
+
+    const list = JSON.parse(localStorage.getItem("topupRequests") || "[]")
+                  .filter(t => t.user === currentUser && t.status === "Đang xử lý")
+                  .sort((a,b)=> new Date(b.createdAt||0) - new Date(a.createdAt||0));
+
+    // Không có lệnh đang xử lý -> ẩn box, mở khóa nút tạo lệnh
+    if(list.length === 0){
+      currentTopupBox.style.display = "none";
+      btnCreateTopup.disabled = false;
+      btnCreateTopup.textContent = "Tạo lệnh nạp";
+      return;
+    }
+
+    // Có lệnh đang xử lý -> hiện box + khóa nút tạo lệnh
+    const top = list[0];
+    topupIdText.textContent = top.id;
+    currentTopupBox.style.display = "block";
+    btnCreateTopup.disabled = true;
+    btnCreateTopup.textContent = "Đang có lệnh nạp chờ xử lý";
+
+    const created = top.createdAt ? new Date(top.createdAt).getTime() : Date.now();
+    let expireAt = top.expireAt ? new Date(top.expireAt).getTime() : (created + 6*60*60*1000);
+    top.expireAt = new Date(expireAt).toISOString();
+
+    // đảm bảo lưu lại expireAt
+    const all = JSON.parse(localStorage.getItem("topupRequests") || "[]");
+    const idx = all.findIndex(x => x.id === top.id);
+    if(idx !== -1){
+      all[idx] = top;
+      localStorage.setItem("topupRequests", JSON.stringify(all));
+    }
+
+    function tick(){
+      const now = Date.now();
+      let diff = Math.max(0, expireAt - now);
+      const totalSec = Math.floor(diff/1000);
+
+      const h = String(Math.floor(totalSec/3600)).padStart(2,"0");
+      const remain = totalSec % 3600;
+      const m = String(Math.floor(remain/60)).padStart(2,"0");
+      const s = String(remain%60).padStart(2,"0");
+
+      countdownText.textContent = `${h}:${m}:${s}`;
+
+      if(diff <= 0){
+        clearInterval(countdownTimer);
+        countdownTimer = null;
+
+        // set trạng thái hết hạn
+        const arr = JSON.parse(localStorage.getItem("topupRequests") || "[]");
+        const i = arr.findIndex(x => x.id === top.id);
+        if(i !== -1 && arr[i].status === "Đang xử lý"){
+          arr[i].status = "Hết hạn";
+          arr[i].processedAt = new Date().toISOString();
+          localStorage.setItem("topupRequests", JSON.stringify(arr));
+        }
+        renderHistory();
+        currentTopupBox.style.display = "none";
+        btnCreateTopup.disabled = false;
+        btnCreateTopup.textContent = "Tạo lệnh nạp";
+      }
+    }
+
+    tick();
+    countdownTimer = setInterval(tick, 1000);
+  }
+
+  startCountdownForPending();
+
+  // ===== TẠO LỆNH NẠP (CHỈ ĐƯỢC 1 LỆNH ĐANG XỬ LÝ) =====
+  document.getElementById("btnCreateTopup").addEventListener("click",()=>{
+    const amount = parseInt(document.getElementById("topupAmount").value);
+    const note   = document.getElementById("topupNote").value.trim();
+
+    // Check xem đã có lệnh đang xử lý chưa
+    let allTopupsCheck = JSON.parse(localStorage.getItem("topupRequests")||"[]");
+    const hasPending = allTopupsCheck.some(t => t.user === currentUser && t.status === "Đang xử lý");
+    if(hasPending){
+      showToast("Bạn đang có 1 lệnh nạp đang xử lý. Vui lòng đợi admin duyệt hoặc đợi lệnh hết hạn!", true);
+      startCountdownForPending(); // đảm bảo UI sync
+      return;
+    }
+
+    if(isNaN(amount) || amount < 10000){
+      showToast("Số tiền tối thiểu 10.000đ",true);
+      return;
+    }
+
+    const uniqueId = "RM247-" + Date.now().toString(36).toUpperCase();
+    const createdAt = new Date().toISOString();
+    const expireAt = new Date(Date.now() + 6*60*60*1000).toISOString();
+
+    let allTopups = JSON.parse(localStorage.getItem("topupRequests")||"[]");
+
+    allTopups.unshift({
+      id: uniqueId,
+      user: currentUser,
+      amount,
+      note,
+      status:"Đang xử lý",
+      createdAt,
+      expireAt
+    });
+
+    localStorage.setItem("topupRequests", JSON.stringify(allTopups));
+
+    showToast("Đã tạo lệnh! ID nạp của bạn: " + uniqueId);
+
+    // reset form
+    document.getElementById("topupAmount").value = "";
+    document.getElementById("topupNote").value = "";
+
+    renderHistory();
+    startCountdownForPending();
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Review Map 247 – Tạo Đơn review map</title>
+
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial;}
+  body{
+    background:#eef3fb;
+    color:#111827;
+  }
+
+  /* ===== Header / Toolbar ===== */
+  header{
+    background:linear-gradient(90deg,#ffffff,#f8fafc);
+    border-bottom:1px solid rgba(15,23,42,0.04);
+    position:relative;
+    z-index:60;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.6) inset;
+    min-height:64px;
+  }
+
+  /* brand (logo) - đặt sát góc trái */
+  .brand{
+    position:absolute;
+    left:12px;
+    top:12px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    text-decoration:none;
+    color:inherit;
+    z-index:70;
+  }
+  .brand .mark{
+    width:34px;height:34px;border-radius:8px;
+    background:linear-gradient(135deg,#2b6ef6,#7c3aed);
+    display:flex;align-items:center;justify-content:center;
+    color:white;font-weight:700;font-size:16px;
+    box-shadow:0 6px 18px rgba(20,20,50,0.06);
+  }
+  .brand .title{
+    font-weight:800;
+    color:#d30000;
+    font-size:16px;
+    white-space:nowrap;
+  }
+
+  /* menu trung tâm (căn giữa trang) */
+  nav.menu{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    display:flex;
+    align-items:center;
+    gap:8px;
+    z-index:50;
+    pointer-events:auto;
+  }
+  nav.menu a{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:8px 12px;
+    border-radius:10px;
+    text-decoration:none;
+    color:#111827;
+    background:transparent;
+    transition:background .12s ease, transform .12s ease;
+    border:1px solid transparent;
+    font-weight:600;
+  }
+  nav.menu a .ico{
+    width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;
+    font-size:14px;color:#6b7280;
+  }
+  nav.menu a span{color:#6b7280;font-weight:600;font-size:14px;white-space:nowrap}
+  nav.menu a:hover{
+    background:rgba(43,110,246,0.06);
+    transform:translateY(-2px);
+    border-color:rgba(43,110,246,0.08);
+  }
+
+  /* ===== STRONG RESET FOR .admin-link =====
+     ensure it looks like other links by default;
+     only hover or .active will show highlight
+  */
+  nav.menu a.admin-link{
+    background: transparent !important;
+    border-color: transparent !important;
+    color: #111827 !important;
+    box-shadow: none !important;
+    outline: none !important;
+    padding:8px 12px !important;
+  }
+  /* hover still highlights */
+  nav.menu a.admin-link:hover{
+    background:rgba(43,110,246,0.06) !important;
+    border-color:rgba(43,110,246,0.08) !important;
+    transform:translateY(-2px) !important;
+  }
+  /* explicitly require .active to show highlight */
+  nav.menu a.admin-link.active{
+    background:rgba(43,110,246,0.06) !important;
+    border-color:rgba(43,110,246,0.08) !important;
+  }
+
+  nav.menu a.logout{ color:#6b7280; }
+
+  .divider{
+    height:28px;width:1px;background:rgba(15,23,42,0.04);
+    margin:0 6px;border-radius:1px;
+  }
+
+  /* Số dư pill - căn giữa theo chiều cao header */
+  .balance-pill{
+    position:absolute;
+    top:50%;
+    right:18px;
+    transform:translateY(-50%);
+    background:#ffffff;
+    padding:6px 12px;
+    border-radius:999px;
+    font-size:13px;
+    font-weight:700;
+    box-shadow:0 6px 16px rgba(15,23,42,0.1);
+    border:1px solid #e5e7eb;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .btn-topup{
+    border:none;
+    padding:4px 8px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:700;
+    cursor:pointer;
+    background:#2563eb;
+    color:#ffffff;
+    transition:.2s;
+  }
+  .btn-topup:hover{ background:#1d4ed8; }
+
+  /* MAIN FORM */
+  .page-wrap{
+    max-width:1100px;
+    margin:26px auto 40px;
+    padding:0 16px;
+  }
+
+  .card{
+    background:#ffffff;
+    border-radius:6px;
+    box-shadow:0 10px 25px rgba(15,23,42,0.12);
+    border:1px solid #e5e7eb;
+    padding:24px 26px 26px;
+  }
+
+  .page-title{
+    text-align:center;
+    font-size:22px;
+    font-weight:700;
+    margin-bottom:20px;
+  }
+
+  .step-label{
+    font-weight:700;
+    font-size:14px;
+    color:#b91c1c;
+    margin-bottom:6px;
+  }
+
+  .input-label{
+    font-size:13px;
+    color:#4b5563;
+    margin-bottom:4px;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  textarea{
+    width:100%;
+    padding:10px 12px;
+    border-radius:4px;
+    border:1px solid #d1d5db;
+    font-size:14px;
+    outline:none;
+    margin-bottom:12px;
+    background:#f9fafb;
+  }
+  input:focus,
+  textarea:focus{
+    background:#ffffff;
+    border-color:#60a5fa;
+    box-shadow:0 0 0 1px rgba(59,130,246,.3);
+  }
+  textarea{ min-height:70px; resize:vertical; }
+
+  .note-block{ font-size:13px; color:#374151; margin:8px 0 10px; line-height:1.5; }
+  .note-block b{color:#111827;}
+
+  .total-row{ margin-top:10px; font-size:18px; font-weight:700; text-align:center; color:#b91c1c; }
+
+  .btn-submit{
+    margin-top:16px;
+    width:100%;
+    background:#2563eb;
+    border:none;
+    color:#ffffff;
+    padding:11px;
+    border-radius:4px;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    transition:.2s;
+  }
+  .btn-submit:hover{ background:#1d4ed8; }
+
+  .helper-text{ margin-top:8px; font-size:12px; color:#6b7280; text-align:center; }
+
+  /* Toast */
+  .toast{
+    position:fixed;
+    right:18px;
+    bottom:18px;
+    background:#16a34a;
+    color:#ecfdf5;
+    padding:10px 14px;
+    min-width:220px;
+    border-radius:8px;
+    font-size:13px;
+    font-weight:600;
+    box-shadow:0 10px 25px rgba(22,163,74,0.4);
+    opacity:0;
+    transform:translateY(16px);
+    pointer-events:none;
+    transition:.3s;
+    z-index:999;
+  }
+  .toast.show{ opacity:1; transform:translateY(0); pointer-events:auto; }
+  .toast.error{ background:#dc2626; color:#fee2e2; box-shadow:0 10px 25px rgba(220,38,38,0.4); }
+
+  /* responsive adjustments */
+  @media (max-width:880px){
+    nav.menu{ left:50%; transform:translate(-50%,-50%); gap:6px; }
+    nav.menu a span{ display:none; } /* hide text on small */
+    .brand .title{ font-size:15px; }
+    .balance-pill{ display:none; }
+  }
+  @media (max-width:520px){
+    header{ padding:8px 10px; min-height:56px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <!-- logo sát trái -->
+  <a href="shop.html" class="brand" title="Về trang chính">
+    <div class="mark">RM</div>
+    <div class="title">Review Map 24H</div>
+  </a>
+
+  <!-- menu căn giữa -->
+  <nav class="menu" role="navigation" aria-label="Thanh điều hướng">
+    <a href="shop.html" class="nav-link" title="Tạo Đơn review map">
+      <span class="ico"><i class="fa-solid fa-map-location-dot"></i></span>
+      <span>Tạo Đơn review map</span>
+    </a>
+
+    <a href="account.html" class="nav-link" title="Tài Khoản">
+      <span class="ico"><i class="fa-solid fa-user"></i></span>
+      <span>Tài Khoản</span>
+    </a>
+
+    <a href="topup.html" class="nav-link" title="Nạp Tiền">
+      <span class="ico"><i class="fa-solid fa-wallet"></i></span>
+      <span>Nạp Tiền</span>
+    </a>
+
+    <a href="history.html" class="nav-link" title="Lịch Sử Đơn">
+      <span class="ico"><i class="fa-solid fa-clock-rotate-left"></i></span>
+      <span>Lịch Sử Đơn</span>
+    </a>
+
+    <div class="divider" aria-hidden="true"></div>
+
+    <a href="contact.html" class="nav-link admin-link" title="Liên Hệ Admin">
+      <span class="ico"><i class="fa-solid fa-circle-info"></i></span>
+      <span>Liên Hệ Admin</span>
+    </a>
+
+    <a href="login.html" class="nav-link logout" id="btnLogout" title="Đăng Xuất">
+      <span class="ico"><i class="fa-solid fa-right-from-bracket"></i></span>
+      <span>Đăng Xuất</span>
+    </a>
+  </nav>
+
+  <!-- balance pill -->
+  <div class="balance-pill" aria-hidden="true">
+    Số dư: <span id="balanceAmount">0 đ</span>
+    <button type="button" class="btn-topup" id="btnGoTopup">Nạp tiền</button>
+  </div>
+</header>
+
+<div class="page-wrap">
+  <div class="card">
+    <h1 class="page-title">Mua Đánh Giá 5 Sao Google Maps</h1>
+
+    <!-- Bước 1 -->
+    <div class="step-label">Bước 1: Nhập link Google maps của bạn</div>
+    <div class="input-label">Dán link địa điểm Google Maps cần tăng review</div>
+    <input type="text" id="mapsLink" placeholder="https://goo.gl/maps/......">
+
+    <!-- Bước 2 -->
+    <div class="step-label">Bước 2: Nhập những ý, từ khóa bạn muốn có trong nội dung review</div>
+    <div class="input-label">Để thành viên viết review sát với dịch vụ của bạn</div>
+    <textarea id="keywords" placeholder="Nhân viên, menu, không gian, chất lượng dịch vụ..."></textarea>
+
+    <!-- Bước 3 -->
+    <div class="step-label">Bước 3: Nhập số lượng đánh giá 5 sao cần mua</div>
+    <div class="input-label">Thành viên web sẽ dựa theo mô tả để triển khai review phù hợp</div>
+    <input type="number" id="quantity" min="1" value="1">
+
+    <!-- Note upload nội dung riêng -->
+    <div class="note-block">
+      ★ <b>Nếu muốn gửi nội dung, ảnh riêng? (+1000đ/1 review)</b><br>
+      - B1: Bạn tải file ảnh lên Google Drive<br>
+      - B2: Lấy link file ảnh &amp; nội dung, lưu vào Google Sheets<br>
+      - B3: Lấy link chia sẻ công khai và dán vào ô bên dưới<br>
+      - Lưu ý: ảnh &amp; nội dung không trùng lặp.
+    </div>
+
+    <input type="text" id="driveLink" placeholder="https://docs.google.com/...">
+
+    <!-- Tổng tiền -->
+    <div class="total-row">
+      Tổng tiền: <span id="totalPrice">14.000 đ</span>
+    </div>
+
+    <!-- Submit -->
+    <button class="btn-submit" id="btnCreate">Bước 4: Tạo Tiến Trình</button>
+    <div class="helper-text">
+      Sau khi tạo đơn, bạn có thể xem lại trong mục <b>Lịch Sử Đơn</b>.
+    </div>
+
+    <hr style="margin:20px 0;border:none;border-top:1px solid #e5e7eb;">
+    <div class="note-block">
+      <div class="step-label">Các trường hợp có thể xảy ra:</div>
+      <ul style="margin-left:18px;margin-top:4px;">
+        <li>Khách order review có ảnh, tỉ lệ có ảnh thường sẽ là khoảng 20–40%, vì còn phụ thuộc: ảnh có thực tế hay không, mới hay cũ, maps dễ lên hay không, thành viên có nhớ đăng ảnh hay không, review có được GG duyệt hay không…</li>
+        <li>Hệ thống Google hằng năm sẽ tiến hành rà soát review khoảng 3 lần trong đó 2 lần quét nhẹ định kỳ và 1 lần quét mạnh cuối năm. Khi có đợt quét xảy ra, khách hàng nên chủ động kiểm tra lại tình trạng review để xử lý bảo hành.</li>
+        <li>Đơn hàng mặc định tăng từ 1–3 review/ngày, không thể cam kết nhanh hơn, chỉ có thể chậm hơn nếu maps khó lên hoặc server đang quá tải đơn.</li>
+        <li>Maps quá 3 ngày không lên thêm review nào, vui lòng liên hệ Admin để kiểm tra. Nếu 1 maps review quá 10 lần mà vẫn không lên (maps có dấu hiệu dính spam), maps đó sẽ được đưa vào hàng chờ và sau 7 ngày, hệ thống sẽ tự chạy lại review tiếp nếu không còn phát hiện lỗi kỹ thuật hoặc cảnh báo spam.</li>
+      </ul>
+    </div>
+
+    <div class="note-block" style="margin-top:10px;">
+      <div class="step-label">Khách hàng lưu ý khi mua:</div>
+      <ul style="margin-left:18px;margin-top:4px;">
+        <li>Hỗ trợ bảo hành tất cả review trong 30 ngày.</li>
+        <li>Không hỗ trợ rút lại tiền sau khi đã nạp vào web.</li>
+        <li>Không được phép đổi tên địa điểm Google Maps trong lúc hệ thống đang buff đánh giá.</li>
+        <li>Không hỗ trợ review nội dung tiếng Anh, địa điểm ngoài Việt Nam,nhạy cảm (cờ bạc, 18+,...).</li>
+        <li>Mỗi đơn buff nên đặt ít nhất 5 review/1 lần/1 maps để tăng chất lượng review và độ ổn định tốt hơn.</li>
+        <li>Phần mô tả ý muốn viết review ở <b>Bước 2</b> phải càng chi tiết càng tốt (những ý, từ khoá mong muốn) để có thể review sát dịch vụ, đầy đủ &amp; tự nhiên hơn.</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ===== CHECK LOGIN =====
+  const currentUser = localStorage.getItem("currentUser");
+  if (!currentUser) {
+    alert("Bạn cần đăng nhập trước!");
+    window.location.href = "login.html";
+  }
+
+  // ===== GIÁ REVIEW (CÓ THỂ ĐIỀU CHỈNH BỞI ADMIN) =====
+  const DEFAULT_PRICE_PER_REVIEW = 14000;
+  let PRICE_PER_REVIEW = DEFAULT_PRICE_PER_REVIEW;
+
+  const adminConfig = JSON.parse(localStorage.getItem("adminConfig") || "{}");
+  if (adminConfig.reviewPrice && !isNaN(adminConfig.reviewPrice)) {
+    PRICE_PER_REVIEW = Number(adminConfig.reviewPrice);
+  }
+
+  const quantityInput = document.getElementById('quantity');
+  const totalPriceEl  = document.getElementById('totalPrice');
+
+  function formatVND(n){
+    return n.toLocaleString('vi-VN') + ' đ';
+  }
+
+  function updateTotal(){
+    let q = parseInt(quantityInput.value) || 1;
+    if(q < 1) q = 1;
+    quantityInput.value = q;
+    totalPriceEl.textContent = formatVND(q * PRICE_PER_REVIEW);
+  }
+  quantityInput.addEventListener('input', updateTotal);
+  updateTotal();
+
+  // ===== LẤY USER & SỐ DƯ =====
+  let users = JSON.parse(localStorage.getItem("users") || "[]");
+  let currentUserObj = users.find(u => u.username === currentUser);
+
+  if(!currentUserObj){
+    currentUserObj = { username: currentUser, password: "", balance: 0 };
+    users.push(currentUserObj);
+    localStorage.setItem("users", JSON.stringify(users));
+  }
+
+  if (typeof currentUserObj.balance !== "number") {
+    currentUserObj.balance = 0;
+    localStorage.setItem("users", JSON.stringify(users));
+  }
+
+  const balanceSpan = document.getElementById("balanceAmount");
+  function renderBalance(){
+    balanceSpan.textContent = formatVND(currentUserObj.balance || 0);
+  }
+  renderBalance();
+
+  // ===== TOAST =====
+  const toast = document.getElementById('toast');
+  let toastTimer = null;
+
+  function showToast(msg, isError=false){
+    toast.textContent = msg;
+    toast.classList.toggle('error', isError);
+    toast.classList.add('show');
+    if(toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=> toast.classList.remove('show'), 2600);
+  }
+
+  // ===== TẠO ĐƠN (CÓ TRỪ SỐ DƯ & CHECK SỐ DƯ) =====
+  document.getElementById('btnCreate').addEventListener('click', () => {
+    const mapsLink = document.getElementById('mapsLink').value.trim();
+    const keywords = document.getElementById('keywords').value.trim();
+    const driveLink = document.getElementById('driveLink').value.trim();
+    let quantity    = parseInt(quantityInput.value) || 0;
+
+    if(!mapsLink){
+      showToast('Vui lòng nhập link Google Maps', true);
+      return;
+    }
+    if(quantity < 1){
+      showToast('Số lượng phải từ 1 trở lên', true);
+      return;
+    }
+
+    const totalCost = quantity * PRICE_PER_REVIEW;
+
+    // CHECK SỐ DƯ
+    if((currentUserObj.balance || 0) < totalCost){
+      showToast('Số dư không đủ, vui lòng nạp thêm!', true);
+      return;
+    }
+
+    // TRỪ SỐ DƯ
+    currentUserObj.balance = (currentUserObj.balance || 0) - totalCost;
+    localStorage.setItem("users", JSON.stringify(users));
+    renderBalance();
+
+    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+
+    const newOrder = {
+      id: Date.now(),
+      user: currentUser,
+      service: 'Đánh giá 5★ Google Maps',
+      mapsLink,
+      keywords,
+      driveLink,
+      quantity,
+      unitPrice: PRICE_PER_REVIEW,
+      status: 'Đang chạy',
+      warranty: 'Còn bảo hành',
+      placeId: '',
+      notice: '',
+      createdAt: new Date().toISOString(),
+      completedAt: null
+    };
+
+    orders.push(newOrder);
+    localStorage.setItem('orders', JSON.stringify(orders));
+
+    showToast('Tạo đơn thành công! Đã trừ ' + formatVND(totalCost));
+
+    document.getElementById('keywords').value = '';
+    document.getElementById('driveLink').value = '';
+  });
+
+  // ===== NÚT NẠP TIỀN TRONG PILL =====
+  document.getElementById('btnGoTopup').addEventListener('click', () => {
+    window.location.href = 'topup.html';
+  });
+
+  // ===== LOGOUT =====
+  document.getElementById('btnLogout').addEventListener('click', (e)=>{
+    e.preventDefault();
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('currentUserRole');
+    window.location.href = 'login.html';
+  });
+</script>
+
+</body>
+</html>
